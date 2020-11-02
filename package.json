@@ -12,6 +12,7 @@
   },
   "keywords": [],
   "author": "",
+  "type": "module",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/rocketacademy/base-node-swe1/issues"
