@@ -1,3 +1,3 @@
 # SWE1: Software Engineering Foundations
 
-# basic-node-swe1
+# base-node-swe1
