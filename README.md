@@ -1,3 +1,1 @@
-# Rocket Academy Coding Bootcamp
-
-## Base Node App
+# Rocket Academy Coding Bootcamp: Base Node App
