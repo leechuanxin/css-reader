@@ -1,3 +1,3 @@
-# SWE1: Software Engineering Foundations
+# Rocket Academy Coding Bootcamp
 
-# base-node-swe1
+## Base Node App
