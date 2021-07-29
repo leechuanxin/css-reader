@@ -6,14 +6,20 @@ const handleFileRead = (error, content) => {
 
   // For each line, log the line number and the content of that line
   for (let i = 0; i < lines.length; i += 1) {
+    // hex color matching
     // matches "#[any value from 0 - f, 3 characters to 6 characters]"
     const HEX_COLOR_ARR = lines[i].match(/#[a-f0-9]{3,6}/g);
     if (Array.isArray(HEX_COLOR_ARR) && HEX_COLOR_ARR.length > 0) {
       for (let j = 0; j < HEX_COLOR_ARR.length; j += 1) {
-        if (HEX_COLOR_ARR[j] in COLOR_TALLY) {
-          COLOR_TALLY[HEX_COLOR_ARR[j]] += 1;
+        let hexColorString = HEX_COLOR_ARR[j];
+        // CSS color shorthand, convert #fff to #ffffff
+        if (hexColorString.length < 7) {
+          hexColorString = `#${hexColorString.substring(1).split('').map((s) => `${s}${s}`).join('')}`;
+        }
+        if (hexColorString in COLOR_TALLY) {
+          COLOR_TALLY[hexColorString] += 1;
         } else {
-          COLOR_TALLY[HEX_COLOR_ARR[j]] = 1;
+          COLOR_TALLY[hexColorString] = 1;
         }
       }
     }
