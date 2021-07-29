@@ -8,30 +8,24 @@ const handleFileRead = (error, content) => {
   const lines = content.split('\n');
   let string = '';
 
-  // On a folder: illegal operation on a directory, read
-  // On a file that does not exist: no such file or directory, open 'mystuff2.txt'
-  // console.log("error:", error);
-
   // For each line, log the line number and the content of that line
   for (let i = 0; i < lines.length; i += 1) {
-    const COLON_INDEX = lines[i].indexOf(':');
-    const HASH_INDEX = lines[i].lastIndexOf('#');
-    const SEMICOLON_INDEX = lines[i].lastIndexOf(';');
-    // only retrieve hashed values after the colon (as css value)
-    if (COLON_INDEX >= 0 && HASH_INDEX > COLON_INDEX) {
-      // hex color values begin from hash, ends before semi-colon
-      const HEX_COLOR = lines[i].substring(HASH_INDEX, SEMICOLON_INDEX);
-      if (HEX_COLOR in COLOR_TALLY) {
-        COLOR_TALLY[HEX_COLOR] += 1;
-      } else {
-        COLOR_TALLY[HEX_COLOR] = 1;
+    // matches "#[any value from 0 - f, 3 characters to 6 characters]"
+    const HEX_COLOR_ARR = lines[i].match(/#[a-f0-9]{3,6}/g);
+    if (Array.isArray(HEX_COLOR_ARR) && HEX_COLOR_ARR.length > 0) {
+      for (let j = 0; j < HEX_COLOR_ARR.length; j += 1) {
+        if (HEX_COLOR_ARR[j] in COLOR_TALLY) {
+          COLOR_TALLY[HEX_COLOR_ARR[j]] += 1;
+        } else {
+          COLOR_TALLY[HEX_COLOR_ARR[j]] = 1;
+        }
       }
     }
   }
 
-  // render object as array of arrays:
-  // 2-index sub-arrays containing key and value
-  const COLOR_TALLY_ARR = Object.entries(COLOR_TALLY);
+  const COLOR_TALLY_ARR = Object
+    .entries(COLOR_TALLY)
+    .sort((a, b) => b[1] - a[1]);
   for (let i = 0; i < COLOR_TALLY_ARR.length; i += 1) {
     string += `${COLOR_TALLY_ARR[i][0]}: ${COLOR_TALLY_ARR[i][1]}`;
     if (i !== COLOR_TALLY_ARR.length - 1) {
