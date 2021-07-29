@@ -13,7 +13,7 @@ const handleFileRead = (error, content) => {
       for (let j = 0; j < HEX_COLOR_ARR.length; j += 1) {
         let hexColorString = HEX_COLOR_ARR[j];
         // CSS color shorthand, convert #fff to #ffffff
-        if (hexColorString.length < 7) {
+        if (hexColorString.length === 4) {
           hexColorString = `#${hexColorString.substring(1).split('').map((s) => `${s}${s}`).join('')}`;
         }
         if (hexColorString in COLOR_TALLY) {
