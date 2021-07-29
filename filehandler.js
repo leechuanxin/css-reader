@@ -45,6 +45,10 @@ const handleFileRead = (error, content) => {
   const COLOR_TALLY_ARR = Object
     .entries(COLOR_TALLY)
     .sort((a, b) => b[1] - a[1]);
+
+  if (COLOR_TALLY_ARR.length > 0) {
+    string += '-------\ncolours:\n-------\n';
+  }
   for (let i = 0; i < COLOR_TALLY_ARR.length; i += 1) {
     string += `${COLOR_TALLY_ARR[i][0]}: ${COLOR_TALLY_ARR[i][1]}`;
     if (i !== COLOR_TALLY_ARR.length - 1) {
