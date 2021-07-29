@@ -1,3 +1,5 @@
+import { rgbToHex } from './conversions.js';
+
 const handleFileRead = (error, content) => {
   // Split the content of our file by lines
   const lines = content.split('\n');
@@ -23,8 +25,23 @@ const handleFileRead = (error, content) => {
         }
       }
     }
+
+    // rgb color matching
+    const RGB_COLOR_ARR = lines[i].match(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
+    if (Array.isArray(RGB_COLOR_ARR) && RGB_COLOR_ARR.length > 0) {
+      for (let j = 0; j < RGB_COLOR_ARR.length; j += 1) {
+        const HEX_STRING = rgbToHex(RGB_COLOR_ARR[j]);
+        if (HEX_STRING in COLOR_TALLY) {
+          COLOR_TALLY[HEX_STRING] += 1;
+        } else {
+          COLOR_TALLY[HEX_STRING] = 1;
+        }
+      }
+    }
   }
 
+  // read all entries in COLOR_TALLY_ARR
+  // combine in a string to be printed
   const COLOR_TALLY_ARR = Object
     .entries(COLOR_TALLY)
     .sort((a, b) => b[1] - a[1]);
