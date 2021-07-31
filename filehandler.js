@@ -1,4 +1,5 @@
 import { rgbToHex } from './conversions.js';
+import getStyles from './styles.js';
 
 const handleFileRead = (error, content) => {
   console.log('content:', content);
@@ -8,30 +9,13 @@ const handleFileRead = (error, content) => {
   const COLOR_TALLY = {};
   const CSS_PROPERTIES_TALLY = {};
   // retrieve styles
-  let styles = [];
-  let stylesStr = content;
-  while (stylesStr.length > 0) {
-    const OPEN_STYLE_INDEX = stylesStr.indexOf('{');
-    const CLOSE_STYLE_INDEX = stylesStr.indexOf('}');
-    if (OPEN_STYLE_INDEX === -1) {
-      // no more existing styles, end loop
-      stylesStr = '';
-    }
-    // next valid style
-    else if (OPEN_STYLE_INDEX > -1 && CLOSE_STYLE_INDEX > OPEN_STYLE_INDEX) {
-      styles.push(stylesStr.substring(OPEN_STYLE_INDEX, CLOSE_STYLE_INDEX + 1));
-      stylesStr = stylesStr.substring(CLOSE_STYLE_INDEX + 1);
-    }
-    // styles with open curly braces, but accidentally forgot to close
-    else {
-      styles.push(stylesStr.substring(OPEN_STYLE_INDEX));
-      stylesStr = '';
-    }
-  }
+  const styles = getStyles(content);
+  // remove braces from styles
+  const trimmedStyles = styles.map((style) => style.substring(1, style.length - 1).trim());
+  console.log('first functions tyles:', trimmedStyles);
 
-  styles = styles.map((style) => style.substring(1, style.length - 1).trim());
-  for (let i = 0; i < styles.length; i += 1) {
-    let styleStr = styles[i];
+  for (let i = 0; i < trimmedStyles.length; i += 1) {
+    let styleStr = trimmedStyles[i];
 
     while (styleStr.length > 0) {
       const COLON_INDEX = styleStr.indexOf(':');
