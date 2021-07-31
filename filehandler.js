@@ -1,10 +1,59 @@
 import { rgbToHex } from './conversions.js';
 
 const handleFileRead = (error, content) => {
+  console.log('content:', content);
   // Split the content of our file by lines
   const lines = content.split('\n');
   let string = '';
   const COLOR_TALLY = {};
+  const CSS_PROPERTIES_TALLY = {};
+  // retrieve styles
+  let styles = [];
+  let stylesStr = content;
+  while (stylesStr.length > 0) {
+    const OPEN_STYLE_INDEX = stylesStr.indexOf('{');
+    const CLOSE_STYLE_INDEX = stylesStr.indexOf('}');
+    if (OPEN_STYLE_INDEX === -1) {
+      // no more existing styles, end loop
+      stylesStr = '';
+    }
+    // next valid style
+    else if (OPEN_STYLE_INDEX > -1 && CLOSE_STYLE_INDEX > OPEN_STYLE_INDEX) {
+      styles.push(stylesStr.substring(OPEN_STYLE_INDEX, CLOSE_STYLE_INDEX + 1));
+      stylesStr = stylesStr.substring(CLOSE_STYLE_INDEX + 1);
+    }
+    // styles with open curly braces, but accidentally forgot to close
+    else {
+      styles.push(stylesStr.substring(OPEN_STYLE_INDEX));
+      stylesStr = '';
+    }
+  }
+
+  styles = styles.map((style) => style.substring(1, style.length - 1).trim());
+  for (let i = 0; i < styles.length; i += 1) {
+    let styleStr = styles[i];
+
+    while (styleStr.length > 0) {
+      const COLON_INDEX = styleStr.indexOf(':');
+      if (COLON_INDEX > -1) {
+        const CSS_PROPERTY_ARR = styleStr
+          .substring(0, COLON_INDEX)
+          .split(/\s+/);
+        const CSS_PROPERTY = CSS_PROPERTY_ARR[CSS_PROPERTY_ARR.length - 1];
+        if (CSS_PROPERTY in CSS_PROPERTIES_TALLY) {
+          CSS_PROPERTIES_TALLY[CSS_PROPERTY] += 1;
+        } else {
+          CSS_PROPERTIES_TALLY[CSS_PROPERTY] = 1;
+        }
+        styleStr = styleStr.substring(COLON_INDEX + 1);
+      } else {
+        styleStr = '';
+      }
+    }
+  }
+
+  // console.log(styles);
+  // console.log('CSS_PROPERTIES_TALLY:', CSS_PROPERTIES_TALLY);
 
   // For each line, log the line number and the content of that line
   for (let i = 0; i < lines.length; i += 1) {
@@ -46,12 +95,25 @@ const handleFileRead = (error, content) => {
     .entries(COLOR_TALLY)
     .sort((a, b) => b[1] - a[1]);
 
+  // read all entries in COLOR_TALLY_ARR
+  // combine in a string to be printed
+  const CSS_PROPERTIES_TALLY_ARR = Object
+    .entries(CSS_PROPERTIES_TALLY)
+    .sort((a, b) => b[1] - a[1]);
+
   if (COLOR_TALLY_ARR.length > 0) {
     string += '-------\ncolours:\n-------\n';
   }
   for (let i = 0; i < COLOR_TALLY_ARR.length; i += 1) {
     string += `${COLOR_TALLY_ARR[i][0]}: ${COLOR_TALLY_ARR[i][1]}`;
-    if (i !== COLOR_TALLY_ARR.length - 1) {
+    string += '\n';
+  }
+  if (CSS_PROPERTIES_TALLY_ARR.length > 0) {
+    string += '-------\nstyles:\n-------\n';
+  }
+  for (let i = 0; i < CSS_PROPERTIES_TALLY_ARR.length; i += 1) {
+    string += `${CSS_PROPERTIES_TALLY_ARR[i][0]}: ${CSS_PROPERTIES_TALLY_ARR[i][1]}`;
+    if (i !== CSS_PROPERTIES_TALLY_ARR.length - 1) {
       string += '\n';
     }
   }
