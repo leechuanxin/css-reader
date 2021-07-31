@@ -1,43 +1,18 @@
 import { rgbToHex } from './conversions.js';
-import getStyles from './styles.js';
+import { getStyles, getPropsTally } from './styles.js';
 
 const handleFileRead = (error, content) => {
-  console.log('content:', content);
   // Split the content of our file by lines
   const lines = content.split('\n');
   let string = '';
   const COLOR_TALLY = {};
-  const CSS_PROPERTIES_TALLY = {};
+  let cssPropsTally = {};
   // retrieve styles
   const styles = getStyles(content);
   // remove braces from styles
   const trimmedStyles = styles.map((style) => style.substring(1, style.length - 1).trim());
-  console.log('first functions tyles:', trimmedStyles);
 
-  for (let i = 0; i < trimmedStyles.length; i += 1) {
-    let styleStr = trimmedStyles[i];
-
-    while (styleStr.length > 0) {
-      const COLON_INDEX = styleStr.indexOf(':');
-      if (COLON_INDEX > -1) {
-        const CSS_PROPERTY_ARR = styleStr
-          .substring(0, COLON_INDEX)
-          .split(/\s+/);
-        const CSS_PROPERTY = CSS_PROPERTY_ARR[CSS_PROPERTY_ARR.length - 1];
-        if (CSS_PROPERTY in CSS_PROPERTIES_TALLY) {
-          CSS_PROPERTIES_TALLY[CSS_PROPERTY] += 1;
-        } else {
-          CSS_PROPERTIES_TALLY[CSS_PROPERTY] = 1;
-        }
-        styleStr = styleStr.substring(COLON_INDEX + 1);
-      } else {
-        styleStr = '';
-      }
-    }
-  }
-
-  // console.log(styles);
-  // console.log('CSS_PROPERTIES_TALLY:', CSS_PROPERTIES_TALLY);
+  cssPropsTally = getPropsTally(trimmedStyles);
 
   // For each line, log the line number and the content of that line
   for (let i = 0; i < lines.length; i += 1) {
@@ -82,7 +57,7 @@ const handleFileRead = (error, content) => {
   // read all entries in COLOR_TALLY_ARR
   // combine in a string to be printed
   const CSS_PROPERTIES_TALLY_ARR = Object
-    .entries(CSS_PROPERTIES_TALLY)
+    .entries(cssPropsTally)
     .sort((a, b) => b[1] - a[1]);
 
   if (COLOR_TALLY_ARR.length > 0) {
