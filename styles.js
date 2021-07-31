@@ -1,3 +1,5 @@
+import { rgbToHex } from './conversions.js';
+
 /**
  * A function that returns the styles in the stylesheet, together with their braces
  * @param  text {string} the entire text content of file read
@@ -67,4 +69,49 @@ export const getPropsTally = (arr) => {
   }
 
   return propsTally;
+};
+
+export const getHexColorTally = (arr) => {
+  const colorTally = {};
+  // For each line, log the line number and the content of that line
+  for (let i = 0; i < arr.length; i += 1) {
+    // hex color matching
+    // matches "#[any value from 0 - f, 3 characters to 6 characters]"
+    const hexColorArr = arr[i].match(/#[a-f0-9]{3,6}/g);
+    // using .match, hexColorArr will be an array if there is length > 0
+    // otherwise, it will be null. thus, no need for a length check
+    if (Array.isArray(hexColorArr)) {
+      for (let j = 0; j < hexColorArr.length; j += 1) {
+        let hexColorString = hexColorArr[j];
+        // CSS color shorthand, convert #fff to #ffffff
+        if (hexColorString.length === 4) {
+          hexColorString = `#${hexColorString.substring(1).split('').map((s) => `${s}${s}`).join('')}`;
+        }
+        if (hexColorString in colorTally) {
+          colorTally[hexColorString] += 1;
+        } else {
+          colorTally[hexColorString] = 1;
+        }
+      }
+    }
+
+    // rgb color matching
+    // matches "rgb([1 to 3 digit number], [1 to 3 digit number], [1 to 3 digit number])",
+    // including any spaces between the characters
+    const rgbColorArr = arr[i].match(/(rgb)\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/g);
+    // using .match, rgbColorArr will be an array if there is length > 0
+    // otherwise, it will be null. thus, no need for a length check
+    if (Array.isArray(rgbColorArr)) {
+      for (let j = 0; j < rgbColorArr.length; j += 1) {
+        const hexString = rgbToHex(rgbColorArr[j]);
+        if (hexString in colorTally) {
+          colorTally[hexString] += 1;
+        } else {
+          colorTally[hexString] = 1;
+        }
+      }
+    }
+  }
+
+  return colorTally;
 };
