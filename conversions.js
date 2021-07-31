@@ -1,8 +1,15 @@
 export const hexToRgb = (string) => {
-  // removes "#", and splits string into string array up to 2 characters each
-  const HEX_ARR = string
-    .substring(1)
-    .match(/.{1,2}/g);
+  // removes "#"
+  let hex = string
+    .substring(1);
+
+  // convert 3 digit hex values into 6 digit
+  if (hex.length === 3) {
+    hex = hex.split('').map((char) => `${char}${char}`).join('');
+  }
+
+  // splits string into string array up to 2 characters each
+  const HEX_ARR = hex.match(/.{1,2}/g);
   // convert each string from hexadecimal to decimal
   const RGB_ARR = HEX_ARR.map((hexNumStr) => parseInt(hexNumStr, 16));
   return `rgb(${RGB_ARR.join(',')})`;
